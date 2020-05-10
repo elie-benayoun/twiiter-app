@@ -15,9 +15,9 @@ class BlockTweet extends React.Component{
         console.log()
         return(
         <TweetContent.Consumer>
-            {({error,errorMessage,handlechange,submit,button})=>(
+            {({error,errorMessage,handlechange,submit,button,tweet})=>(
         <form className="myform">
-        <textarea onChange={(event)=>{handlechange(event.target.value)}} className="myinput" rows="2" cols="25" placeholder="What you have in mind..."></textarea>
+        <textarea value={tweet} onChange={(event)=>{handlechange(event.target.value)}} className="myinput" rows="2" cols="25" placeholder="What you have in mind..."></textarea>
         <Container>
         <Row>
         <Col xs md={8} className="error-container">

@@ -36,7 +36,6 @@ export function addUserById(id,object){
 }
 
 export function getUsernameById(id){
-    return db.collection("users").doc(id).get()
-    
+    return db.collection("users").get()
 
 }

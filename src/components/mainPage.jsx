@@ -4,7 +4,8 @@ import { addMessages } from "../lib/MessageList";
 import Makelist from "./makelist";
 import TweetContext from "../lib/TweetContext";
 import BlockTweet from "./BlockTweet";
-import firebase from "../lib/firebase"
+import firebase from "../lib/firebase";
+import {getUsernameById} from "../lib/MessageList"
 
 class MainPage extends React.Component {
   constructor(props) {
@@ -16,20 +17,22 @@ class MainPage extends React.Component {
       data: [],
       loading: false,
       errormessage: "The tweet can't contain more then 140 chars.",
+      names:[]
     };
   }
-//importer appcontext avec id de l'utilisateur
   submit(name) {
+if(this.state.tweet.length>0){
     this.setState({ button: true });
     let userId=firebase.auth().currentUser.providerData[0].uid;
     let object = {
       content: this.state.tweet,
-      userName: userId,//ajouter userId a la place de name
+      userName: userId,
       date: new Date().toISOString(),
     };
     addMessages(object)
       .then((data) => {
-        this.setState({ data: [object, ...this.state.data], button: false });
+        this.setState({ data: [object, ...this.state.data], button: false ,tweet:""});
+        this.loadData()
       })
       .catch((er) => {
         this.setState({
@@ -37,22 +40,31 @@ class MainPage extends React.Component {
           error: true,
         });
       });
+    }
+  else{
+    this.setState({
+      error: true,
+      button: true,
+      errormessage: "The length of the tweet is not valid",
+    });
+  }
   }
 
   handlechange(value) {
-    if (value.length < 140) {
-      this.setState({ tweet: value, error: false, button: false });
+    if (value.length < 140 && value.length!=0) {
+      this.setState({ tweet: value, error: false, button:false });
     } else {
       this.setState({
         tweet: value,
         error: true,
         button: true,
-        errormessage: "The tweet can't contain more then 140 chars.",
+        errormessage: "The length of the tweet is not valid",
       });
     }
   }
 
   loadData() {
+    this.setState({loading:true})
     getMessages().then((data) => {
       let newList = data.docs.map((e) => {
         return e.data();
@@ -62,7 +74,8 @@ class MainPage extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ loading: true });
+    this.setState({ loading: true});
+    this.loadNames()
     this.loadData()
     // this.state.interval = setInterval(() => {
     //   this.loadData();
@@ -71,6 +84,13 @@ class MainPage extends React.Component {
 
   componentWillUnmount() {
     // this.setState({ interval: clearInterval });
+  }
+
+  loadNames(){
+    getUsernameById().then(res=>{
+      let newlist=res.docs.map((e)=>{return e.data()})
+      this.setState({names:newlist})
+    })
   }
 
   render() {
@@ -88,6 +108,9 @@ class MainPage extends React.Component {
             },
             button: this.state.button,
             data: this.state.data,
+            tweet:this.state.tweet,
+            loadNames:this.loadNames,
+            names:this.state.names
           }}
         >
           <>
@@ -96,10 +119,11 @@ class MainPage extends React.Component {
             <BlockTweet />
             <div className="main-tweets">
               {this.state.loading && <div>Loading ...</div>}
-              <Makelist></Makelist>
+              <Makelist/>
             </div>
           </>
           }
+          {!firebase.auth().currentUser && <div>You have to be signed in to use this functionality</div>}
           </>
         </TweetContext.Provider>
       </>

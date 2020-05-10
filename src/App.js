@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Username from "./components/profile";
 import './App.css';
 import AppContext from './lib/AppContext';
-import Login from "./components/Log-in"
+import Login from "./components/Log-in";
+import firebase from"./lib/firebase"
 
 class App extends React.Component {
   constructor(props){
@@ -14,7 +15,9 @@ class App extends React.Component {
       logged:false
     }
 
+
   }
+
 
 
   render(){
@@ -28,16 +31,16 @@ class App extends React.Component {
           onLogChange:(bool)=>{this.setState({logged:bool})}
       }}>
         <header className="App-header">
-          {!this.state.logged &&<div>Hello If you want to use this app you first have to log-in</div>}
           <Router>
           <div className="navbar">
-            {this.state.logged && 
+        
             <>
             <Link to="/home" className="item-navbar">Home</Link>
             <Link to="/profile" className="item-navbar">Profile</Link>
             </>
-            }
+            
             <Link to="/user/login" className="item-navbar">Login</Link>
+            <Link to="/user/register" className="item-navbar">Sign-up</Link>
           </div>
             <Switch>
               <Route path="/home">
