@@ -15,6 +15,10 @@ class Username extends React.Component{
         }
     }
 
+    componentDidMount(){
+        this.props.onHomeChange(false)
+    }
+
     handlechange(value){
         this.setState({name:value,succes:false,succes:false})
     }

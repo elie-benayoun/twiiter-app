@@ -6,7 +6,11 @@ const AppContext = React.createContext({
     islogged:false,
     onLogChange:(bool)=>{},
     userId:"",
-    setUserId:()=>{}
+    setUserId:()=>{},
+    filterby:"",
+    onfilterchange:(filter)=>{},
+    type:true,
+    onTypeChange:(newType)=>{}
 });
 
 export default AppContext;

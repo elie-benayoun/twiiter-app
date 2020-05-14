@@ -5,13 +5,18 @@ import Username from "./components/profile";
 import './App.css';
 import AppContext from './lib/AppContext';
 import Login from "./components/Log-in";
-import firebase from"./lib/firebase"
+import firebase from"./lib/firebase";
+import Searchbar from "./components/searchbar"
+
 class App extends React.Component {
   constructor(props){
     super(props)
     this.state={
       name:JSON.parse(localStorage.getItem("name")),
-      logged:false
+      logged:false,
+      filterby:"",
+      type:true,
+      home:false
     }
 
 
@@ -38,7 +43,13 @@ class App extends React.Component {
           name:this.state.name,
           onNameChange:()=>{this.setState({name:JSON.parse(localStorage.getItem("name"))})},
           islogged:this.state.logged,
-          onLogChange:(bool)=>{this.setState({logged:bool})}
+          onLogChange:(bool)=>{this.setState({logged:bool})},
+          filterby:this.state.filterby,
+          onfilterchange:(filter)=>{this.setState({filterby:filter})},
+          type:this.state.type,
+          onTypeChange:(newType)=>{this.setState({type:newType})},
+          home:this.state.home,
+          onHomeChange:(newHome)=>{this.setState({home:newHome})}
       }}>
         <header className="App-header">
           <Router>
@@ -48,7 +59,7 @@ class App extends React.Component {
             <Link to="/home" className="item-navbar">Home</Link>
             <Link to="/profile" className="item-navbar">Profile</Link>
             <Link to="/user/login"  className="item-navbar">Log-Out</Link>
-            <input type="text" placeholder="search for data"></input>
+            {this.state.home &&<Searchbar/>}
             </>
           }
 
@@ -61,13 +72,13 @@ class App extends React.Component {
           </div>
             <Switch>
               <Route path="/home">
-              <MainPage></MainPage>
+                <MainPage onHomeChange={(newHome)=>{this.setState({home:newHome})}}></MainPage>
               </Route>
               <Route path="/profile">
-                <Username></Username>
+                <Username onHomeChange={(newHome)=>{this.setState({home:newHome})}}></Username>
               </Route>
               <Route path="/user/:info">
-                <Login></Login>
+                <Login onHomeChange={(newHome)=>{this.setState({home:newHome})}}></Login>
               </Route>
             </Switch>
           </Router>

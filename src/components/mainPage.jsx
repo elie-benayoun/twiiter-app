@@ -4,6 +4,7 @@ import { addMessages } from "../lib/MessageList";
 import Makelist from "./makelist";
 import TweetContext from "../lib/TweetContext";
 import BlockTweet from "./BlockTweet";
+import AppContext from "../lib/AppContext"
 import firebase from "../lib/firebase";
 import {getUsernameById} from "../lib/MessageList"
 import Form from "react-bootstrap/Form"
@@ -97,6 +98,7 @@ if(this.state.tweet.length>0){
   }
 
   componentDidMount() {
+    this.props.onHomeChange(true)
     const db=firebase.firestore()
     this.state.unsubscribe=db.collection("twitter")
     .onSnapshot(function (){
@@ -133,6 +135,9 @@ if(this.state.tweet.length>0){
   render() {
     return (
       <>
+      <AppContext.Consumer>
+        {({filterby,type})=>(
+
         <TweetContext.Provider
           value={{
             error: this.state.error,
@@ -148,7 +153,9 @@ if(this.state.tweet.length>0){
             tweet:this.state.tweet,
             loadNames:this.loadNames,
             names:this.state.names,
-            tweetContainer:this.state.tweetContainer
+            tweetContainer:this.state.tweetContainer,
+            filter:filterby,
+            type
           }}
         >
           <>
@@ -167,6 +174,8 @@ if(this.state.tweet.length>0){
           {!firebase.auth().currentUser && <div>You have to be signed in to use this functionality</div>}
           </>
         </TweetContext.Provider>
+        )}
+      </AppContext.Consumer>
       </>
     );
   }

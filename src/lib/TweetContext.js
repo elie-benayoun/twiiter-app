@@ -8,7 +8,7 @@ const TweetContext = React.createContext({
   submit:()=>{},
   data:[],
   tweet:"",
-  tweetContainer:""
+  tweetContainer:"",
 });
 
 export default TweetContext;

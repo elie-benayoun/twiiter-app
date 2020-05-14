@@ -32,6 +32,10 @@ class LogIn extends React.Component {
       }
   }
 
+  componentDidMount(){
+    this.props.onHomeChange(false)
+  }
+
   submit(onLogChange) {
     firebase
       .auth()
