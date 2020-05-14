@@ -12,7 +12,6 @@ class BlockTweet extends React.Component{
     }
 
     render(){
-        console.log()
         return(
         <TweetContent.Consumer>
             {({error,errorMessage,handlechange,submit,button,tweet})=>(

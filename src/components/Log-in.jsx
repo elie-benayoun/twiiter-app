@@ -50,7 +50,6 @@ class LogIn extends React.Component {
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then((res) => {
-          console.log(res)
           firebase.auth().currentUser.updateProfile({
             displayName:this.state.user
           })
@@ -72,7 +71,6 @@ class LogIn extends React.Component {
   loginwithgoogle(onLogChange){
     firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(
       res=>{
-        console.log(res)
         addUserById(res.additionalUserInfo.profile.id,{name:res.user.displayName,uid:res.additionalUserInfo.profile.id})
         onLogChange(true)
       }
@@ -112,8 +110,8 @@ class LogIn extends React.Component {
         </>
         </>
         }
-        {firebase.auth().currentUser && <div onClick={()=>{firebase.auth().signOut() ; 
-          onLogChange(false)}}>You are signed in Click here to log out </div>}
+        {firebase.auth().currentUser && <div>You are signed in Click<Button className="log-out-button" onClick={()=>{firebase.auth().signOut() ; 
+          onLogChange(false)}} variant="primary">here</Button> to log out </div>}
         {this.state.error && <div>{this.state.errormessage}</div>}
         
         </>

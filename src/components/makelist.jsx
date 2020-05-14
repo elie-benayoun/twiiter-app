@@ -18,13 +18,12 @@ class makelist extends React.Component{
         return(
         <TweetContext.Consumer>
             
-            {({data,names})=>(
+            {({data,names,tweetContainer})=>(
                 <>
                     {data &&
                     data.sort((a, b) => new Date(b.date) - new Date(a.date)).map(message=>{
-                        console.log(names)
                                 return(
-                                    <div className="tweet-container">
+                                    <div className={tweetContainer}>
                                                 <div className="info-container">
                                                     <div>{names.find((name)=>{return name.uid==message.userName}).name}</div> 
                                                     <div>{message.date}</div>

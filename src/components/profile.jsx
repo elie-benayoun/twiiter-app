@@ -10,24 +10,39 @@ class Username extends React.Component{
         this.state={
             name:"",
             succes:false,
-            image:""
+            image:"",
+            message:""
         }
     }
 
     handlechange(value){
-        this.setState({name:value,succes:false})
+        this.setState({name:value,succes:false,succes:false})
     }
     submit(onNameChange){
+        if(this.state.name.length<10 && this.state.name.length>3){
         localStorage.setItem("name", JSON.stringify(this.state.name));
         onNameChange()
         firebase.auth().currentUser.updateProfile({
-            displayName:this.state.name
+            displayName:this.state.name,
           })
-          addUserById(firebase.auth().currentUser.providerData[0].uid,{name:this.state.name,uid:firebase.auth().currentUser.providerData[0].uid})
-        this.setState({succes:true})
+        if(this.state.image.length>0){
         firebase.auth().currentUser.updateProfile({
             photoURL:this.state.image
           })
+        }
+
+        addUserById(firebase.auth().currentUser.providerData[0].uid,{name:this.state.name,uid:firebase.auth().currentUser.providerData[0].uid})
+        .then((res)=>{
+            this.setState({succes:true,message:"Your data was successfully updated"})
+        })
+        .catch((err)=>{
+            this.setState({succes:true,message:"Sorry therewas a problem updating your"})
+        })
+        }
+
+        else{
+            this.setState({succes:true,message:"Error: the username must be between 3 and 10 letters "})
+        }
     }
 
     render(){
@@ -35,7 +50,7 @@ class Username extends React.Component{
             <>
         {firebase.auth().currentUser && 
             <div className="profile-wrapper">
-            <h2>Profile</h2>
+            <h2 className="profile-name">Profile</h2>
             <Form.Group>
             <Form.Label>Your current name is {firebase.auth().currentUser.displayName}</Form.Label>
             <Form.Control className="username-input" value={this.state.name} type="text" placeholder="New Name" onChange={(event)=>{this.handlechange(event.target.value)}} />
@@ -50,7 +65,7 @@ class Username extends React.Component{
                     )}
                 </AppContext.Consumer>
             </div>
-            {this.state.succes && <div>Your name was changed</div>}
+            {this.state.succes && <div>{this.state.message}</div>}
             </div>
         
         }

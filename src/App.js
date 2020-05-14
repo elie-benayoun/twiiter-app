@@ -6,7 +6,6 @@ import './App.css';
 import AppContext from './lib/AppContext';
 import Login from "./components/Log-in";
 import firebase from"./lib/firebase"
-
 class App extends React.Component {
   constructor(props){
     super(props)
@@ -16,6 +15,17 @@ class App extends React.Component {
     }
 
 
+  }
+
+  componentDidMount(){
+  
+    firebase.auth().onAuthStateChanged((user)=> {
+      if (user) {
+        this.setState({logged:true})
+      } else {
+        this.setState({logged:false})
+      }
+    });
   }
 
 
@@ -33,14 +43,21 @@ class App extends React.Component {
         <header className="App-header">
           <Router>
           <div className="navbar">
-        
+          {this.state.logged && 
             <>
             <Link to="/home" className="item-navbar">Home</Link>
             <Link to="/profile" className="item-navbar">Profile</Link>
+            <Link to="/user/login"  className="item-navbar">Log-Out</Link>
+            <input type="text" placeholder="search for data"></input>
             </>
-            
+          }
+
+          {!this.state.logged &&
+            <>
             <Link to="/user/login" className="item-navbar">Login</Link>
             <Link to="/user/register" className="item-navbar">Sign-up</Link>
+            </>
+          }
           </div>
             <Switch>
               <Route path="/home">

@@ -6,6 +6,7 @@ import TweetContext from "../lib/TweetContext";
 import BlockTweet from "./BlockTweet";
 import firebase from "../lib/firebase";
 import {getUsernameById} from "../lib/MessageList"
+import Form from "react-bootstrap/Form"
 
 class MainPage extends React.Component {
   constructor(props) {
@@ -17,8 +18,11 @@ class MainPage extends React.Component {
       data: [],
       loading: false,
       errormessage: "The tweet can't contain more then 140 chars.",
-      names:[]
-    };
+      names:[],
+      checkmessage:"My Tweets",
+      myTweet:false,
+      tweetContainer:"tweet-container"
+    }
   }
   submit(name) {
 if(this.state.tweet.length>0){
@@ -32,7 +36,7 @@ if(this.state.tweet.length>0){
     addMessages(object)
       .then((data) => {
         this.setState({ data: [object, ...this.state.data], button: false ,tweet:""});
-        this.loadData()
+        this.loadDataAndNames()
       })
       .catch((er) => {
         this.setState({
@@ -63,35 +67,68 @@ if(this.state.tweet.length>0){
     }
   }
 
-  loadData() {
+  loadDataAndNames() {
+    if(firebase.auth().currentUser){
+    
+    if(this.state.names.find(name=>{return name.name==firebase.auth().currentUser.displayName})){
+      this.loadData()
+    }
+    else{
+    getUsernameById().then(res=>{
+      let newlist=res.docs.map((e)=>{return e.data()})
+      this.setState({names:newlist})
+      this.loadData()
+    })
+  }
+  }
+  }
+
+  loadData(){
     this.setState({loading:true})
     getMessages().then((data) => {
-      let newList = data.docs.map((e) => {
+      let newerList = data.docs.map((e) => {
         return e.data();
       });
-      this.setState({ data: newList, loading: false, button: false });
+      if(this.state.myTweet){
+        newerList=newerList.filter(tweet=>{return tweet.userName==firebase.auth().currentUser.providerData[0].uid})
+      }
+      this.setState({ data: newerList, loading: false, button: false });
     });
   }
 
   componentDidMount() {
+    const db=firebase.firestore()
+    this.state.unsubscribe=db.collection("twitter")
+    .onSnapshot(function (){
+          addTostate()
+      });
+
+    const addTostate=()=>{
+      this.loadDataAndNames()
+    }
     this.setState({ loading: true});
-    this.loadNames()
-    this.loadData()
-    // this.state.interval = setInterval(() => {
-    //   this.loadData();
-    // }, 5000);
+    this.loadDataAndNames()
   }
+
+
+
+  
 
   componentWillUnmount() {
-    // this.setState({ interval: clearInterval });
+    this.state.unsubscribe()
   }
 
-  loadNames(){
-    getUsernameById().then(res=>{
-      let newlist=res.docs.map((e)=>{return e.data()})
-      this.setState({names:newlist})
-    })
+  checkChange(event){
+    if(event.target.checked){
+      this.setState({checkmessage:"All Tweets",myTweet:true,tweetContainer:"my-tweet-container"})
+    }
+
+    else{
+      this.setState({checkmessage:"My Tweets",myTweet:false,tweetContainer:"tweet-container"})
+    }
+    this.loadDataAndNames()
   }
+
 
   render() {
     return (
@@ -110,13 +147,17 @@ if(this.state.tweet.length>0){
             data: this.state.data,
             tweet:this.state.tweet,
             loadNames:this.loadNames,
-            names:this.state.names
+            names:this.state.names,
+            tweetContainer:this.state.tweetContainer
           }}
         >
           <>
           {firebase.auth().currentUser && 
           <>
             <BlockTweet />
+            <Form.Group controlId="formBasicCheckbox">
+              <Form.Check type="checkbox" label={this.state.checkmessage} onClick={(event)=>{this.checkChange(event)}}/>
+            </Form.Group>
             <div className="main-tweets">
               {this.state.loading && <div>Loading ...</div>}
               <Makelist/>
