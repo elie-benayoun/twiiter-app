@@ -9,7 +9,6 @@ class makelist extends React.Component{
         super(props)
         this.state={
             name:"",
-            do:true
         }
 
     }
@@ -17,7 +16,7 @@ class makelist extends React.Component{
     createList(data,names,tweetContainer,filter,type){
         console.log(type)
         if(filter.length>0 && type){
-            data=data.filter(tweet=>{return(tweet.content==filter)})
+            data=data.filter(tweet=>{return(tweet.content.toUpperCase().indexOf(filter.toUpperCase()) > -1)})
         }
 
         if(filter.length>0 && type==false){
